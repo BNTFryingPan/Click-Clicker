@@ -2,11 +2,11 @@
 a = Sure. You could cheat, and modify this save file. But thats what cheateers do. Cheaters gonna cheat cheat cheat!
 
 [currency]
-clicks = 336.0
+clicks = 4.5
 keyboards = 0
 
 [makers]
-cursors = 0
+cursors = 1
 mice = 0
 autoclickers = 0
 superclickers = 0

@@ -12,6 +12,7 @@ except ImportError:
     
 import time
 import threading
+from tkinter import messagebox
 
 autosave = True
 AutosaveInterval = 60
@@ -20,8 +21,8 @@ AutosaveInterval = 60
 
 class numbers:
     #Numbers
-    cursors = 0
     clicks = 0
+    cursors = 0
     mice = 0
     autoclickers = 0
     superclickers = 0
@@ -35,11 +36,12 @@ class math:
     clicksPerAuto = 15
     clicksPerSuper = 50
     clicksPerMega = 115
-    requiredPerCursor = 15 + (numbers.cursors * 2)
-    requiredPerMouse = 100 + (numbers.mice * 3)
-    requiredPerAuto = 500 + (numbers.autoclickers * 4)
-    requiredPerSuper = 1200 + (numbers.superclickers * 5)
-    requiredPerMega = 4000 + (numbers.megaclickers * 6)
+    multiplier = 1.125
+    requiredPerCursor = 15 * multiplier ** ( numbers.cursors )
+    requiredPerMouse = 100 * multiplier ** ( numbers.mice )
+    requiredPerAuto = 500 * multiplier ** ( numbers.autoclickers )
+    requiredPerSuper = 1200 * multiplier ** ( numbers.superclickers )
+    requiredPerMega = 4000 * multiplier ** ( numbers.megaclickers )
     
 class clickers:
     class cursors:
@@ -49,7 +51,6 @@ class clickers:
                 if numbers.clicks >= required:
                     numbers.clicks = numbers.clicks - required
                     numbers.cursors = numbers.cursors + amnt
-                    math.clicksPerSecond = math.clicksPerSecond + math.clicksPerCursor
                 else:
                     return
                     
@@ -69,7 +70,6 @@ class clickers:
                 if numbers.clicks >= required:
                     numbers.clicks = numbers.clicks - required
                     numbers.mice = numbers.mice + 1
-                    math.clicksPerSecond = math.clicksPerSecond + math.clicksPerMouse
                 else:
                     return
                     
@@ -79,7 +79,6 @@ class clickers:
                     if numbers.clicks >= required:
                         numbers.clicks = numbers.clicks - required
                         numbers.mice = numbers.mice + 1
-                        math.clicksPerSecond = math.clicksPerSecond + math.clicksPerMouse
                     else:
                         break
     
@@ -90,7 +89,6 @@ class clickers:
                 if numbers.clicks >= required:
                     numbers.clicks = numbers.clicks - required
                     numbers.autoclickers = numbers.autoclickers + 1
-                    math.clicksPerSecond = math.clicksPerSecond + math.clicksPerAuto
                 else:
                     return
                     
@@ -100,7 +98,6 @@ class clickers:
                     if numbers.clicks >= required:
                         numbers.clicks = numbers.clicks - required
                         numbers.autoclickers = numbers.autoclickers + 1
-                        math.clicksPerSecond = math.clicksPerSecond + math.clicksPerAuto
                     else:
                         break
                         
@@ -121,21 +118,56 @@ def loadSave():
     global autosave
     #print('Loading Save Game...')
     try:
-        autosave = bool(int(save.Get('usersettings','autosave')))
+        autosave = str(save.Get('usersettings','autosave')).lower
+        if autosave == 'true' or autosave == '1':
+            autosave = True
+        else:
+            autosave = False
         AutosaveInterval = int(save.Get('usersettings','autosaveinterval'))
         numbers.clicks = float(save.Get('currency', 'clicks'))
+        numbers.cursors = int(save.Get('makers', 'cursors'))
+        numbers.mice = int(save.Get('makers', 'mice'))
+        numbers.autoclickers = int(save.Get('makers', 'autoclickers'))
     except TypeError:
         messagebox.showerror('Unable to load save file. Make sure that your save file isnt corrupted. \nIf your save file is missing or corrupted, run ResetSave.py to create a new save file.')
+        return
+        
+    
+    #for i in range(numbers.cursors):
+        #tName = 'CursorCreateT #' + str(i)
+        #t = threading.Thread(target=None)
+        
+        
+    
+    
+    
     
 def wipeSave():
-    from tkinter import messagebox
+    global autosave
     doWipe = messagebox.askyesno('Wipe Save','Are you sure you want to wipe your save file? \n this cannot be undone!')
     if doWipe:
-        try:
-            import ResetSave
-        except ImportError:
-            import GameFiles.ResetSave
+        autosave = False
+        numbers.clicks = 0
+        numbers.cursors = 0
+        numbers.mice = 0
+        numbers.autoclickers = 0
+        numbers.superclickers = 0
+        numbers.megaclickers = 0
+        math.clicksPerSecond = 0
+        math.clicksPerCursor = .25
+        math.clicksPerMouse = 1
+        math.clicksPerAuto = 15
+        math.clicksPerSuper = 50
+        math.clicksPerMega = 115
+        math.multiplier = 1.125
+        math.requiredPerCursor = 15 * math.multiplier ** ( numbers.cursors )
+        math.requiredPerMouse = 100 * math.multiplier ** ( numbers.mice )
+        math.requiredPerAuto = 500 * math.multiplier ** ( numbers.autoclickers )
+        math.requiredPerSuper = 1200 * math.multiplier ** ( numbers.superclickers )
+        math.requiredPerMega = 4000 * math.multiplier ** ( numbers.megaclickers )
+        saveGame()
         loadSave()
+        
         messagebox.showinfo('Wipe Save','Your save file has been wiped.')
     else:
         messagebox.showinfo('Wipe Save','Your save file will not be wiped.')
@@ -152,11 +184,12 @@ class MainLoopsManager:
         autosaveT.start()
         loop = True
         while loop == True:
-            math.requiredPerCursor = 15 + (numbers.cursors * 2)
-            math.requiredPerMouse = 100 + (numbers.mice * 3)
-            math.requiredPerAuto = 500 + (numbers.autoclickers * 4)
-            math.requiredPerSuper = 1200 + (numbers.superclickers * 5)
-            math.requiredPerMega = 4000 + (numbers.megaclickers * 6)
+            math.clicksPerSecond = ( ( numbers.cursors * math.clicksPerCursor ) + ( numbers.mice * math.clicksPerMouse ) + ( numbers.autoclickers * math.clicksPerAuto ) + ( numbers.superclickers * math.clicksPerAuto) + ( numbers.megaclickers * math.clicksPerMega ) )
+            math.requiredPerCursor = 15 * math.multiplier ** ( numbers.cursors )
+            math.requiredPerMouse = 100 * math.multiplier ** ( numbers.mice )
+            math.requiredPerAuto = 500 * math.multiplier ** ( numbers.autoclickers )
+            math.requiredPerSuper = 1200 * math.multiplier ** ( numbers.superclickers )
+            math.requiredPerMega = 4000 * math.multiplier ** ( numbers.megaclickers )
             time.sleep(0.025)
             
     def clicksGeneratorLoop():

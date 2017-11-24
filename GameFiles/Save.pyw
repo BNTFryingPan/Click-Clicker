@@ -27,13 +27,15 @@ def Get(section="{ALL}", item="{ALL}"):
         if section == "{ALL}":
             return save
         elif item == '{ALL}':
-            return save[section.lower()]
-        else:    
-            return save[section.lower()][item.lower()]
+            section = section.lower()
+            return save[section]
+        else:
+            section = section.lower()
+            return save[section][item]
     except KeyError:
         pass
     
-def Set(section, item=None, value=''):
+def Set(section='{FULLSAVE}', item=None, value=''):
     """Sets a value in the save file. Wouldve been set() but that was already a thing D:
     
     Arguments:
@@ -45,13 +47,18 @@ def Set(section, item=None, value=''):
     Behavour:
         
     """
-    
-    value = str(value)
-    if not item == None:
-        save[section][item] = value
-    else:
-        save[section] = {}
-        save[section][item] = value
+    try:
+        value = str(value)
+        section = str(section).lower()
+        item = str(item).lower()
+        #if
+        if not item == None:
+            save[section][item] = value
+        else:
+            save[section] = {}
+            save[section][item] = value
+    except Exception as err:
+        print(str(err))
         
 def commit():
     with open('SaveFile.txt','w') as saveFile:

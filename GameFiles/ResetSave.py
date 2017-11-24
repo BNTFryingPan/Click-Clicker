@@ -49,4 +49,3 @@ settings['autosaveinterval'] = '60'
 
 with open('SaveFile.txt','w') as sf:
     save.write(sf)
-    print(str(save['notes']['a']))
