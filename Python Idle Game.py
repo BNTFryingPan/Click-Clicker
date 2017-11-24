@@ -20,8 +20,9 @@ try:
         # Save.set('stats', 'username', newUn)
         # print("Hello! " + newUn + "!")
 
-    
-    GameFiles.RunGame.runGame()
+    import threading
+    gameT = threading.Thread(target=GameFiles.RunGame.runGame)
+    gameT.start()
 
 
 except ImportError as err:
