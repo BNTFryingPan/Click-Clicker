@@ -33,7 +33,7 @@ window = None
 def vp_start_gui():
     '''Starting point when module is the main routine.'''
     global val, w, root
-    global window
+    global top
     root = Tk()
     top = Click_Clicker (root)
     #window = top
@@ -321,15 +321,13 @@ class Click_Clicker:
         
         global window
         window = self
-        print(str(window))
-        print(str(self.infoPopup))
         
         
     def popupInfo(mode='wait', seconds=10, text='Blab'):
         import time
-        global window
+        global top
         #print(str(window))
-        self = window
+        self = top
         if mode == 'show':
             self.infoPopup.place(y=100)
             self.infoPopup.configure(text=text)
@@ -358,13 +356,14 @@ class Click_Clicker:
         while keepUpdate == True:
             try:
                 clicks = GM.numbers.clicks
-                #self.SaveExportB.configure(text=label.SaveExportBText)
+                self.SaveExportB.configure(text='Export Save')
                 self.ClicksAmntLabel.configure(text='Clicks: ' + str(int(GM.numbers.clicks)) + ' (' + str(GM.math.clicksPerSecond) + ' per second)\nCPS Multiplier: COMING SOON')
                 self.BuyCursorB.configure(text='Buy Cursor (' + str(GM.math.requiredPerCursor) + ')')
                 self.CursorCostLabel.configure(text=str(GM.numbers.cursors) + ' cursors clicking ' + str(GM.numbers.cursors * GM.math.clicksPerCursor) + ' times per second')
                 self.BuyMouseB.configure(text='Buy Mouse (' + str(GM.math.requiredPerMouse) + ')')
                 self.MouseCostLabel.configure(text=str(GM.numbers.mice) + ' mice clicking ' + str(GM.math.clicksPerMouse * GM.numbers.mice) + ' times per second')
                 self.BuyAutoB.configure(text='Buy AutoClicker (' + str(GM.math.requiredPerAuto) + ')')
+                self.AutoCostLabel.configure(text=str(GM.numbers.autoclickers) + ' autoclickers clicking ' + str(GM.math.clicksPerAuto * GM.numbers.autoclickers) + ' times per second')
                 
                 if GM.numbers.clicks < GM.math.requiredPerCursor:
                     self.BuyCursorB.configure(state=DISABLED)
@@ -381,7 +380,6 @@ class Click_Clicker:
             except AttributeError:
                 self = window
                 label = Click_Clicker.mainWindowLabels
-                print('err')
                 time.sleep(.15)
 
 
@@ -393,7 +391,7 @@ def guiThread(closeOnExit):
     import subprocess as s
     s.Popen('taskkill /F /PID {0}'.format(pid), shell=True)
         
-    
+
 # def persistWarning(waitTime):
     # return
     # try:
